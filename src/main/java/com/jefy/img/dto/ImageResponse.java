@@ -2,11 +2,7 @@ package com.jefy.img.dto;
 
 import com.jefy.img.entity.ImageFile;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.awt.*;
-
 import static com.jefy.img.dto.Constant.IMAGES_BASE_URL;
 
 /**
