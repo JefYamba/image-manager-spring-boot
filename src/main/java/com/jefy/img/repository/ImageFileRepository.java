@@ -14,4 +14,5 @@ import java.util.Optional;
 @Repository
 public interface ImageFileRepository extends JpaRepository<ImageFile, Integer> {
     Optional<ImageFile> findByName(String fileName);
+    Optional<ImageFile> findByCompleteName(String fileName);
 }

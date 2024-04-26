@@ -6,5 +6,6 @@ package com.jefy.img.dto;
  * @Since 25/04/2024
  */
 public interface Constant {
+
     String IMAGES_BASE_URL = "/images";
 }
