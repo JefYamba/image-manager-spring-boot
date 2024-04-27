@@ -34,7 +34,7 @@ public class ImageController {
     private final ImageFileService imageFileService;
 
     @Operation(
-            description = "",
+            description = "get the image by its name",
             responses = {
                 @ApiResponse(
                         description = "Success",
