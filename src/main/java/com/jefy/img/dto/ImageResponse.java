@@ -3,7 +3,7 @@ package com.jefy.img.dto;
 import com.jefy.img.entity.ImageFile;
 import lombok.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import static com.jefy.img.dto.Constant.IMAGES_BASE_URL;
+import static com.jefy.img.dto.Constant.IMAGES_URL;
 
 /**
  * @Author JefYamba
@@ -29,7 +29,7 @@ public class ImageResponse {
     }
 
     private static String getUrl(String completeName) {
-        String url = IMAGES_BASE_URL + "/" + completeName;
+        String url = IMAGES_URL + "/" + completeName;
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(url).toUriString();
     }
 }

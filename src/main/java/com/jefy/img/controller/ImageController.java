@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static com.jefy.img.dto.Constant.IMAGES_BASE_URL;
+import static com.jefy.img.dto.Constant.IMAGES_URL;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
@@ -23,7 +23,7 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
  */
 @RestController
 @CrossOrigin("*")
-@RequestMapping(IMAGES_BASE_URL)
+@RequestMapping(IMAGES_URL)
 @RequiredArgsConstructor
 public class ImageController {
     private final ImageFileService imageFileService;
@@ -43,8 +43,11 @@ public class ImageController {
     public ResponseEntity<?> getUrlImage(@PathVariable String completeName) {
         try {
             return ResponseEntity.ok(imageFileService.getImage(completeName));
-        }  catch (IllegalArgumentException e){
+
+        } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
+        }  catch (ObjectNotFoundException e){
+            return ResponseEntity.notFound().build();
         } catch (IOException e){
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -56,7 +59,7 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> addImage(@RequestPart String name, @RequestPart MultipartFile image) {
+    public ResponseEntity<?> registerImage(@RequestPart String name, @RequestPart MultipartFile image) {
         ImageRequest imageRequest = ImageRequest.builder()
                 .name(name)
                 .image(image)

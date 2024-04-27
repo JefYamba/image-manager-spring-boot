@@ -7,5 +7,6 @@ package com.jefy.img.dto;
  */
 public interface Constant {
 
-    String IMAGES_BASE_URL = "/images";
+    String APP_ROOT = "image_manager/v1";
+    String IMAGES_URL = APP_ROOT + "/images";
 }

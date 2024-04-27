@@ -7,6 +7,8 @@ import com.jefy.img.repository.ImageFileRepository;
 import com.jefy.img.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
@@ -22,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 
 /**
  * @Author JefYamba
@@ -49,9 +50,7 @@ public class ImageFileServiceImpl implements ImageFileService {
         if (imageCompleteName != null && !imageCompleteName.isEmpty()) {
             Optional<ImageFile> optionalImageFile = imageFileRepository.findByCompleteName(imageCompleteName);
             if (optionalImageFile.isPresent()) {
-
                 return Files.readAllBytes(getImagePath(imageCompleteName));
-
             } else {
                 throw new ObjectNotFoundException(ImageFile.class, imageCompleteName);
             }
@@ -112,9 +111,7 @@ public class ImageFileServiceImpl implements ImageFileService {
 
     private String saveImageInDirectory(ImageRequest imageRequest) throws IOException {
         String imageCompleteName = imageRequest.getName() + "." + getImageExtension(imageRequest);
-
         Path imagePath = getImagePath(imageCompleteName);
-
         Files.copy(imageRequest.getImage().getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
 
         return imageCompleteName;
@@ -135,9 +132,12 @@ public class ImageFileServiceImpl implements ImageFileService {
         }
     }
 
-    private Path getImagePath(String imageCompleteName) throws FileNotFoundException {
-        File directory = ResourceUtils.getFile("classpath:static/images");
-        String absolutePath = directory.getAbsolutePath();
+    private Path getImagePath(String imageCompleteName) throws IOException {
+/*        File directory = ResourceUtils.getFile("classpath:static/images");
+        Resource resource = new ClassPathResource("static/images");
+        File directory = resource.getFile();
+        String absolutePath = directory.getAbsolutePath();*/
+        String absolutePath = "src/main/resources/static/images";
         return Paths.get(absolutePath + File.separator + imageCompleteName);
     }
 }
