@@ -63,6 +63,23 @@ public class ImageController {
         }
     }
 
+    @Operation(
+            description = "get the image view by its full name",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Not found / Invalid parameter",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Internal Server Error / could not read the image file",
+                            responseCode = "500"
+                    )
+            }
+    )
     @GetMapping(path = "/{completeName}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
     public ResponseEntity<?> getUrlImage(@PathVariable String completeName) {
         try {
@@ -77,6 +94,15 @@ public class ImageController {
         }
     }
 
+    @Operation(
+            description = "fetch all the images",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200"
+                    )
+            }
+    )
     @GetMapping("")
     public ResponseEntity<Response<List<ImageResponse>>> getAll(){
         return ResponseEntity.ok(
@@ -90,6 +116,23 @@ public class ImageController {
         );
     }
 
+    @Operation(
+            description = "Register or update an image",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Bad request/ Invalid parameter",
+                            responseCode = "400"
+                    ),
+                    @ApiResponse(
+                            description = "Internal Server Error / could not read the image file",
+                            responseCode = "500"
+                    )
+            }
+    )
     @PostMapping("/upload")
     public ResponseEntity<Response<ImageResponse>> registerImage(@RequestPart String name, @RequestPart MultipartFile image) {
         ImageRequest imageRequest = ImageRequest.builder()
@@ -129,6 +172,23 @@ public class ImageController {
         }
     }
 
+    @Operation(
+            description = "Delete an image",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Not found/ Invalid parameter",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Internal Server Error / could not read the image file",
+                            responseCode = "500"
+                    )
+            }
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Response<Boolean>> deleteImage(@PathVariable Integer id) {
         try {
@@ -148,8 +208,8 @@ public class ImageController {
             return ResponseEntity.badRequest().body(
                     Response.<Boolean>builder()
                             .timeStamp(now())
-                            .status(BAD_REQUEST)
-                            .statusCode(BAD_REQUEST.value())
+                            .status(NOT_FOUND)
+                            .statusCode(NOT_FOUND.value())
                             .message(e.getMessage())
                             .data(false)
                             .build()
