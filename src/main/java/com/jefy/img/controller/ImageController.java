@@ -1,8 +1,11 @@
 package com.jefy.img.controller;
 
+import com.jefy.img.dto.Response;
 import com.jefy.img.dto.ImageRequest;
 import com.jefy.img.dto.ImageResponse;
 import com.jefy.img.service.ImageFileService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +16,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.jefy.img.dto.Constant.IMAGES_URL;
+import static java.time.LocalDateTime.now;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
@@ -28,12 +33,31 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 public class ImageController {
     private final ImageFileService imageFileService;
 
+    @Operation(
+            description = "",
+            responses = {
+                @ApiResponse(
+                        description = "Success",
+                        responseCode = "200"
+                ),
+                @ApiResponse(
+                        description = "Not found / Invalid parameter",
+                        responseCode = "404"
+                )
+            }
+    )
     @GetMapping(path = "/get/{fileName}")
-    public ResponseEntity<ImageResponse> getImage(@PathVariable String fileName) {
+    public ResponseEntity<Response<ImageResponse>> getImage(@PathVariable String fileName) {
         try {
-            ImageResponse imageResponse = imageFileService.get(fileName);
-
-            return ResponseEntity.ok(imageResponse);
+            return ResponseEntity.ok(
+                    Response.<ImageResponse>builder()
+                            .timeStamp(now())
+                            .status(OK)
+                            .statusCode(OK.value())
+                            .message("Images retrieved successfully")
+                            .data(imageFileService.get(fileName))
+                            .build()
+            );
         } catch (ObjectNotFoundException e){
             return ResponseEntity.notFound().build();
         }
@@ -54,35 +78,92 @@ public class ImageController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ImageResponse>> getAll(){
-        return ResponseEntity.ok(imageFileService.getAll());
+    public ResponseEntity<Response<List<ImageResponse>>> getAll(){
+        return ResponseEntity.ok(
+                Response.<List<ImageResponse>>builder()
+                        .timeStamp(now())
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .message("Images retrieved successfully")
+                        .data(imageFileService.getAll())
+                        .build()
+        );
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> registerImage(@RequestPart String name, @RequestPart MultipartFile image) {
+    public ResponseEntity<Response<ImageResponse>> registerImage(@RequestPart String name, @RequestPart MultipartFile image) {
         ImageRequest imageRequest = ImageRequest.builder()
                 .name(name)
                 .image(image)
                 .build();
         try {
-            return ResponseEntity.ok(imageFileService.save(imageRequest));
+            return ResponseEntity.ok(
+                    Response.<ImageResponse>builder()
+                            .timeStamp(now())
+                            .status(OK)
+                            .statusCode(OK.value())
+                            .message("Image registered successfully")
+                            .data(imageFileService.save(imageRequest))
+                            .build()
+            );
         } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.<ImageResponse>builder()
+                            .timeStamp(now())
+                            .status(BAD_REQUEST)
+                            .statusCode(BAD_REQUEST.value())
+                            .message(e.getMessage())
+                            .data(null)
+                            .build()
+            );
         } catch (IOException e){
-            return ResponseEntity.internalServerError().body("Could not add image : " + e.getMessage());
+            return ResponseEntity.internalServerError().body(
+                    Response.<ImageResponse>builder()
+                            .timeStamp(now())
+                            .status(INTERNAL_SERVER_ERROR)
+                            .statusCode(INTERNAL_SERVER_ERROR.value())
+                            .message("Could not add image : " + e.getMessage())
+                            .data(null)
+                            .build()
+            );
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable Integer id) {
+    public ResponseEntity<Response<Boolean>> deleteImage(@PathVariable Integer id) {
         try {
             imageFileService.delete(id);
 
-            return ResponseEntity.ok("Image deleted successfully");
+            return ResponseEntity.ok(
+                    Response.<Boolean>builder()
+                            .timeStamp(now())
+                            .status(OK)
+                            .statusCode(OK.value())
+                            .message("Image deleted successfully")
+                            .data(true)
+                            .build()
+
+            );
         } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    Response.<Boolean>builder()
+                            .timeStamp(now())
+                            .status(BAD_REQUEST)
+                            .statusCode(BAD_REQUEST.value())
+                            .message(e.getMessage())
+                            .data(false)
+                            .build()
+            );
         } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Could not delete image : " + e.getMessage());
+            return ResponseEntity.internalServerError().body(
+                    Response.<Boolean>builder()
+                            .timeStamp(now())
+                            .status(INTERNAL_SERVER_ERROR)
+                            .statusCode(INTERNAL_SERVER_ERROR.value())
+                            .message("Could not delete image : " + e.getMessage())
+                            .data(false)
+                            .build()
+            );
         }
 
     }

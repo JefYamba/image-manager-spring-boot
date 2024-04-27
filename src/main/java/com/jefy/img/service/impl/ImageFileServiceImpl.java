@@ -7,11 +7,8 @@ import com.jefy.img.repository.ImageFileRepository;
 import com.jefy.img.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -132,11 +129,7 @@ public class ImageFileServiceImpl implements ImageFileService {
         }
     }
 
-    private Path getImagePath(String imageCompleteName) throws IOException {
-/*        File directory = ResourceUtils.getFile("classpath:static/images");
-        Resource resource = new ClassPathResource("static/images");
-        File directory = resource.getFile();
-        String absolutePath = directory.getAbsolutePath();*/
+    private Path getImagePath(String imageCompleteName) {
         String absolutePath = "src/main/resources/static/images";
         return Paths.get(absolutePath + File.separator + imageCompleteName);
     }
